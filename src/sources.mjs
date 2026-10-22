@@ -134,8 +134,11 @@ export async function checkAll(config) {
     ["jd", () => checkJd(S.jd, size)],
     ["sneakershop", () => checkSneakershop(S.sneakershop, size)],
   ];
+  // Zrodla z onActions: false (blokada IP centrow danych) pomijamy na runnerze.
+  const onCI = process.env.GITHUB_ACTIONS === "true";
+  const active = jobs.filter(([id]) => !(onCI && S[id].onActions === false));
   return Promise.all(
-    jobs.map(async ([id, fn]) => {
+    active.map(async ([id, fn]) => {
       const base = { source: id, shop: S[id].label, url: S[id].url };
       try {
         return { ...base, ok: true, ...(await fn()) };

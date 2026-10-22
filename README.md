@@ -11,7 +11,7 @@ EU **43**, cap **460 zł**, watch until 2026-12-31.
 | Source | How it is read | Size-level stock |
 |---|---|---|
 | Nike.com PL | public `api.nike.com` endpoints the product page itself calls: `product_feed` (PL price, GTIN per size) and `available_gtins` (EU stock level per GTIN) | yes, HIGH / MEDIUM / LOW / OOS |
-| JD Sports PL | URL-encoded app state embedded in the product HTML (`offers[].offer.stock_shipment`), price from JSON-LD | yes, unit count |
+| JD Sports PL (home laptop only: Akamai blocks GitHub IPs, even real Chrome gets Access Denied) | URL-encoded app state embedded in the product HTML (`offers[].offer.stock_shipment`), price from JSON-LD | yes, unit count |
 | SneakerShop.pl | IdoSell endpoint `/ajax/projector.php?action=get&product=49223&get=sizes`. Adrenaline.pl is the same company and product, its endpoint hides sizes | yes, unit count |
 
 All three answer a plain `fetch` with a browser User-Agent, so the bot needs no browser.

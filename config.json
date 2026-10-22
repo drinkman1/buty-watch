@@ -16,6 +16,8 @@
     },
     "jd": {
       "label": "JD Sports PL",
+      "onActions": false,
+      "why": "Akamai blokuje IP GitHuba (Access Denied takze dla Chrome, 22.10.2026); z domowego lacza dziala",
       "url": "https://jdsports.pl/meskie/buty/sneakersy/nike-air-max-90-szary-do6706-002"
     },
     "sneakershop": {
