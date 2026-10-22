@@ -1,0 +1,27 @@
+{
+  "product": {
+    "name": "Nike Air Max 90 Smoke Grey/Light Photo Blue",
+    "styleColor": "DO6706-002",
+    "gtin43": "00195244683369"
+  },
+  "size": "43",
+  "maxPrice": 460,
+  "stopAfter": "2026-12-31",
+  "dailyReportHourWarsaw": 8,
+  "errorAlertAfter": 4,
+  "sources": {
+    "nike": {
+      "label": "Nike.com PL",
+      "url": "https://www.nike.com/pl/t/buty-meskie-nike-air-max-90-EZeqopR0/DO6706-002"
+    },
+    "jd": {
+      "label": "JD Sports PL",
+      "url": "https://jdsports.pl/meskie/buty/sneakersy/nike-air-max-90-szary-do6706-002"
+    },
+    "sneakershop": {
+      "label": "SneakerShop / Adrenaline",
+      "url": "https://sneakershop.pl/pl/products/obuwie/mezczyzna/nike-sportswear/buty-meskie-nike-air-max-90-do6706-002-49223.html",
+      "productId": "49223"
+    }
+  }
+}

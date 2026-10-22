@@ -1,0 +1,91 @@
+name: buty-watch
+
+# Co 15 minut: Nike PL (API), JD Sports, SneakerShop. Rozmiary na Nike znikaja
+# i wracaja w ciagu godzin, wiec rzadszy skan przegapilby okno.
+# Minuty nie na pelnych kwadransach - tam kolejka cronow GitHuba jest najdluzsza.
+# Stan zyje na galezi data; bot nigdy nie dotyka main.
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "scan = normalny przebieg, dry-run = bez Telegrama i zapisu, test = wiadomosc testowa"
+        type: choice
+        options: [scan, dry-run, test]
+        default: scan
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: buty-watch
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Testy offline
+        run: node test/selftest.mjs
+
+      - name: Stan z galezi data
+        run: |
+          if git fetch --depth 1 origin data 2>/dev/null; then
+            git checkout FETCH_HEAD -- data && echo "Wczytano stan."
+          else
+            echo "Brak galezi data - pierwszy przebieg."
+          fi
+
+      - name: Skan
+        id: run
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          MODE: ${{ inputs.mode || 'scan' }}
+        run: |
+          case "$MODE" in
+            dry-run) node src/run.mjs --dry-run ;;
+            test)    node src/run.mjs --test ;;
+            *)       node src/run.mjs ;;
+          esac | tee /tmp/run.log
+          { echo '```'; cat /tmp/run.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Zapis stanu na galezi data
+        if: (inputs.mode || 'scan') == 'scan' && steps.run.outputs.stopped != 'true'
+        run: |
+          git config user.name "buty-watch bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git ls-remote --exit-code --heads origin data >/dev/null; then
+            git fetch --depth 1 origin data
+            git worktree add -B data /tmp/d FETCH_HEAD
+          else
+            git worktree add --detach /tmp/d
+            git -C /tmp/d checkout --orphan data
+            git -C /tmp/d rm -rfq .
+          fi
+          mkdir -p /tmp/d/data
+          cp data/* /tmp/d/data/
+          git -C /tmp/d add data
+          if git -C /tmp/d diff --cached --quiet; then
+            echo "Stan bez zmian - nic do zapisania."
+          else
+            git -C /tmp/d commit -qm "stan $(date -u +%FT%TZ)"
+            git -C /tmp/d push -q origin data
+            echo "Stan zapisany."
+          fi
+
+      - name: Koniec obserwacji
+        if: steps.run.outputs.stopped == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow disable buty-watch --repo "${{ github.repository }}"

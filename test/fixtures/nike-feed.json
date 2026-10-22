@@ -1,0 +1,244 @@
+{
+ "objects": [
+  {
+   "productInfo": [
+    {
+     "merchPrice": {
+      "id": "8cb93a8e-b0c6-5792-9cd9-433dfc8ffefb",
+      "snapshotId": "a24a6ea4-ce75-4665-a070-001792662387",
+      "productId": "f49ba9ad-d307-574e-923e-bd75665dd60b",
+      "parentId": "f49ba9ad-d307-574e-923e-bd75665dd60b",
+      "parentType": "merchProduct",
+      "modificationDate": "2026-10-22T09:46:27.630Z",
+      "country": "PL",
+      "msrp": 649.99,
+      "fullPrice": 649.99,
+      "currentPrice": 454.99,
+      "currency": "PLN",
+      "discounted": true,
+      "promoInclusions": [],
+      "promoExclusions": [
+       "TRUE"
+      ],
+      "resourceType": "merchPrice",
+      "links": {
+       "self": {
+        "ref": "/merch/prices/v2/8cb93a8e-b0c6-5792-9cd9-433dfc8ffefb"
+       }
+      }
+     },
+     "merchProduct": {
+      "status": "ACTIVE",
+      "styleColor": "DO6706-002"
+     },
+     "skus": [
+      {
+       "gtin": "00195244683291",
+       "nikeSize": "6",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "38.5",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683307",
+       "nikeSize": "6.5",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "39",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683314",
+       "nikeSize": "7",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "40",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683321",
+       "nikeSize": "7.5",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "40.5",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683338",
+       "nikeSize": "8",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "41",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683345",
+       "nikeSize": "8.5",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "42",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683352",
+       "nikeSize": "9",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "42.5",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683369",
+       "nikeSize": "9.5",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "43",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683376",
+       "nikeSize": "10",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "44",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683383",
+       "nikeSize": "10.5",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "44.5",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683390",
+       "nikeSize": "11",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "45",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683406",
+       "nikeSize": "11.5",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "45.5",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683413",
+       "nikeSize": "12",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "46",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683420",
+       "nikeSize": "12.5",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "47",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683437",
+       "nikeSize": "13",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "47.5",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683444",
+       "nikeSize": "14",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "48.5",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      },
+      {
+       "gtin": "00195244683451",
+       "nikeSize": "15",
+       "countrySpecifications": [
+        {
+         "country": "PL",
+         "localizedSize": "49.5",
+         "localizedSizePrefix": "EU",
+         "taxInfo": {}
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

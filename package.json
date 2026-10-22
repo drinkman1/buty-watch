@@ -1,0 +1,6 @@
+{
+  "name": "buty-watch",
+  "private": true,
+  "type": "module",
+  "scripts": { "check": "node test/selftest.mjs", "scan": "node src/run.mjs" }
+}
