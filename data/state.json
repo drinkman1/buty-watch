@@ -15,6 +15,59 @@
       "failStreak": 0,
       "errorAlerted": false,
       "stock": 0
+    },
+    "am90-grey:nike": {
+      "failStreak": 0,
+      "errorAlerted": false,
+      "available": false,
+      "buy": false,
+      "price": 454.99,
+      "stock": "OOS"
+    },
+    "am90-grey:idosell": {
+      "failStreak": 0,
+      "errorAlerted": false,
+      "available": false,
+      "buy": false,
+      "price": 519.99,
+      "stock": 0
+    },
+    "pepper-am90": {
+      "failStreak": 0,
+      "errorAlerted": false,
+      "seen": [
+        "1371629",
+        "1371685",
+        "1355910",
+        "1369942",
+        "1367490",
+        "1362095",
+        "1353264",
+        "1350907",
+        "1348033",
+        "1345461",
+        "1342719",
+        "1340017",
+        "1322572",
+        "1320749",
+        "1313176",
+        "1309301",
+        "1308820",
+        "1258643",
+        "1198715",
+        "1156065",
+        "1230005",
+        "1140539",
+        "1232393",
+        "1165912",
+        "1166410",
+        "1178146",
+        "1202324",
+        "1204951",
+        "1276814",
+        "1159647"
+      ],
+      "hits": 3
     }
   },
   "lastDaily": "2026-10-22"
