@@ -1,6 +1,8 @@
 name: buty-watch
 
-# Co 15 minut: Nike PL (API), JD Sports, SneakerShop. Rozmiary na Nike znikaja
+# Tor a: Nike PL (API), SneakerShop, Pepper. Zalando, Lounge i JD blokuja IP
+# GitHuba - te chodza z laptopa (tor b, scripts/scan-local.cmd).
+# Co 15 minut, bo rozmiary na Nike znikaja
 # i wracaja w ciagu godzin, wiec rzadszy skan przegapilby okno.
 # Minuty nie na pelnych kwadransach - tam kolejka cronow GitHuba jest najdluzsza.
 # Stan zyje na galezi data; bot nigdy nie dotyka main.
@@ -49,14 +51,14 @@ jobs:
       - name: Skan
         id: run
         env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ZAKUPY_TELEGRAM_BOT_TOKEN: ${{ secrets.ZAKUPY_TELEGRAM_BOT_TOKEN }}
+          ZAKUPY_TELEGRAM_CHAT_ID: ${{ secrets.ZAKUPY_TELEGRAM_CHAT_ID }}
           MODE: ${{ inputs.mode || 'scan' }}
         run: |
           case "$MODE" in
-            dry-run) node src/run.mjs --dry-run ;;
-            test)    node src/run.mjs --test ;;
-            *)       node src/run.mjs ;;
+            dry-run) node src/run.mjs --track a --dry-run ;;
+            test)    node src/run.mjs --track a --test ;;
+            *)       node src/run.mjs --track a ;;
           esac | tee /tmp/run.log
           { echo '```'; cat /tmp/run.log; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
 
@@ -74,7 +76,7 @@ jobs:
             git -C /tmp/d rm -rfq .
           fi
           mkdir -p /tmp/d/data
-          cp data/* /tmp/d/data/
+          cp data/* /tmp/d/data/ 2>/dev/null || true
           git -C /tmp/d add data
           if git -C /tmp/d diff --cached --quiet; then
             echo "Stan bez zmian - nic do zapisania."

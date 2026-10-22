@@ -123,28 +123,102 @@ function rawDecode(s, start) {
       if (depth === 0) return [JSON.parse(s.slice(start, j + 1)), j + 1];
     }
   }
-  throw new Error("JD: niedomkniety JSON");
+  throw new Error("niedomkniety JSON w stronie");
 }
 
-export async function checkAll(config) {
-  const size = config.size;
-  const S = config.sources;
-  const jobs = [
-    ["nike", () => checkNike(config.product, size)],
-    ["jd", () => checkJd(S.jd, size)],
-    ["sneakershop", () => checkSneakershop(S.sneakershop, size)],
-  ];
-  // Zrodla z onActions: false (blokada IP centrow danych) pomijamy na runnerze.
-  const onCI = process.env.GITHUB_ACTIONS === "true";
-  const active = jobs.filter(([id]) => !(onCI && S[id].onActions === false));
-  return Promise.all(
-    active.map(async ([id, fn]) => {
-      const base = { source: id, shop: S[id].label, url: S[id].url };
-      try {
-        return { ...base, ok: true, ...(await fn()) };
-      } catch (e) {
-        return { ...base, ok: false, error: String((e && e.message) || e) };
-      }
-    }),
-  );
+// --- Zalando ------------------------------------------------------------
+// JSON-LD ProductGroup: hasVariant[] = {size, offers: {price, availability}}.
+// Sprawdzone 22.10 w przegladarce: dostepnosc w JSON-LD zgadza sie z lista
+// rozmiarow na stronie. Z IP GitHuba Akamai trzyma polaczenie do timeoutu -> tor b.
+export function parseZalando(html, size) {
+  for (const m of html.matchAll(/<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/g)) {
+    let d;
+    try { d = JSON.parse(m[1]); } catch { continue; }
+    const g = (Array.isArray(d) ? d : [d]).find((x) => x && x["@type"] === "ProductGroup");
+    if (!g) continue;
+    const v = (g.hasVariant || []).find((x) => String(x.size) === size);
+    const anyPrice = (g.hasVariant || []).map((x) => num(x.offers && x.offers.price)).find((p) => p != null) ?? null;
+    if (!v) return { price: anyPrice, available: false, stock: 0, note: `rozmiar ${size} nie wystepuje w ofercie` };
+    const avail = /InStock|LimitedAvailability/.test(String(v.offers && v.offers.availability));
+    return { price: num(v.offers && v.offers.price), available: avail, stock: avail ? "InStock" : "OOS", note: v.sku };
+  }
+  throw new Error("Zalando: brak ProductGroup w JSON-LD (blokada albo zmiana strony)");
+}
+
+// --- Pepper (feed) --------------------------------------------------------
+// Wyniki wyszukiwania niosa kazdy watek jako JSON w atrybucie data-vue3.
+export function parsePepper(html) {
+  const out = [];
+  for (const m of html.matchAll(/data-vue3='(\{"name":"ThreadMainListItemNormalizer"[\s\S]*?)'/g)) {
+    let th;
+    try { th = JSON.parse(unescapeHtml(m[1])).props.thread; } catch { continue; }
+    if (!th || !th.threadId) continue;
+    out.push({
+      id: String(th.threadId),
+      title: th.title,
+      price: num(th.price),
+      shop: th.merchant && th.merchant.merchantName,
+      expired: th.isExpired === true,
+      url: `https://www.pepper.pl/promocje/${th.titleSlug || "x"}-${th.threadId}`,
+      at: th.publishedAt ? new Date(th.publishedAt * 1000).toISOString() : null,
+    });
+  }
+  if (!out.length && !/Szukaj/.test(html)) throw new Error("Pepper: brak watkow i brak strony wyszukiwania");
+  return out;
+}
+
+// --- Zalando Lounge (feed) -----------------------------------------------
+// Produkty widac tylko po zalogowaniu. Publiczna strona outletu pokazuje
+// karuzele biezacych kampanii (ok. 12 najnowszych) - pilnujemy, czy startuje
+// kampania pasujaca do wzorca (Nike, sneakersy). Z IP GitHuba 403 -> tor b.
+export function parseLounge(html) {
+  const i = html.indexOf('"campaigns":[');
+  if (i < 0) throw new Error("Lounge: brak listy kampanii na stronie");
+  const [arr] = rawDecode(html, i + '"campaigns":'.length);
+  return arr.map((c) => ({
+    id: c.id,
+    title: c.name,
+    brands: c.brands || [],
+    discount: c.discount,
+    url: c.url,
+    from: c.date_from,
+    to: c.date_to,
+  }));
+}
+
+function unescapeHtml(s) {
+  return s.replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&");
+}
+
+const PRODUCT_CHECKS = {
+  nike: (src, p) => checkNike({ styleColor: p.styleColor }, p.size),
+  idosell: (src, p) => checkSneakershop(src, p.size),
+  jd: (src, p) => checkJd(src, p.size),
+  zalando: async (src, p) => parseZalando(await get(src.url), p.size),
+};
+const FEED_CHECKS = {
+  pepper: async (f) => parsePepper(await get(f.url)),
+  lounge: async (f) => parseLounge(await get(f.url)),
+};
+
+// track: "a" (Actions) albo "b" (laptop). Sklepy z track "b" blokuja IP GitHuba.
+export async function checkAll(config, track) {
+  const jobs = [];
+  for (const p of config.products) {
+    for (const src of p.sources.filter((s) => s.track === track)) {
+      const base = { kind: "product", source: `${p.id}:${src.type}`, product: p, shop: src.shop, url: src.url };
+      jobs.push(PRODUCT_CHECKS[src.type](src, p).then(
+        (r) => ({ ...base, ok: true, ...r }),
+        (e) => ({ ...base, ok: false, error: String((e && e.message) || e) }),
+      ));
+    }
+  }
+  for (const f of (config.feeds || []).filter((x) => x.track === track)) {
+    const base = { kind: "feed", source: f.id, feed: f, shop: f.shop, url: f.url };
+    jobs.push(FEED_CHECKS[f.type](f).then(
+      (items) => ({ ...base, ok: true, items }),
+      (e) => ({ ...base, ok: false, error: String((e && e.message) || e) }),
+    ));
+  }
+  return Promise.all(jobs);
 }

@@ -3,12 +3,13 @@
 
 import fs from "node:fs";
 import assert from "node:assert/strict";
-import { parseNike, parseJd, parseIdo } from "../src/sources.mjs";
+import { parseNike, parseJd, parseIdo, parseZalando, parsePepper, parseLounge } from "../src/sources.mjs";
 import { decide } from "../src/decide.mjs";
 import { formatMessage } from "../src/telegram.mjs";
 
 const fx = (f) => fs.readFileSync(new URL(`./fixtures/${f}`, import.meta.url), "utf8");
 const config = JSON.parse(fs.readFileSync(new URL("../config.json", import.meta.url), "utf8"));
+const grey = config.products.find((p) => p.id === "am90-grey");
 let n = 0;
 const t = (name, fn) => { fn(); n++; console.log(`ok  ${name}`); };
 
@@ -38,7 +39,33 @@ t("SneakerShop: 43 brak, cena 519,99", () => {
   assert.equal(r.available, false);
 });
 
-const R = (o) => ({ source: "nike", shop: "Nike.com PL", url: "https://x", ok: true, stock: null, ...o });
+t("Zalando: 43 dostepny za 454, 44 (w fixture OOS) niedostepny", () => {
+  const html = fx("zalando.html");
+  const r = parseZalando(html, "43");
+  assert.equal(r.price, 454);
+  assert.equal(r.available, true);
+  assert.equal(parseZalando(html, "44").available, false);
+  assert.throws(() => parseZalando("<html>Access Denied</html>", "43"));
+});
+
+t("Pepper: watki z id, cena, sklep, wygasniete oznaczone", () => {
+  const items = parsePepper(fx("pepper.html"));
+  assert.ok(items.length >= 5);
+  const nike = items.find((x) => x.id === "1371629");
+  assert.equal(nike.price, 454.99);
+  assert.equal(nike.shop, "Nike");
+  assert.equal(nike.expired, false);
+  assert.match(nike.url, /pepper\.pl\/promocje\/.+-1371629$/);
+  assert.ok(items.some((x) => x.expired));
+});
+
+t("Lounge: lista kampanii z publicznej strony", () => {
+  const c = parseLounge(fx("lounge.html"));
+  assert.ok(c.length >= 10);
+  assert.ok(c.every((x) => x.id && x.title && x.url));
+});
+
+const R = (o) => ({ kind: "product", source: "am90-grey:nike", product: grey, shop: "Nike.com PL", url: "https://x", ok: true, stock: null, ...o });
 const NIGHT = Date.parse("2026-10-22T01:00:00Z"); // 03:00 w Warszawie - bez raportu
 const kinds = (out) => out.msgs.map((m) => m.kind);
 
@@ -47,7 +74,7 @@ t("pierwszy przebieg: cena pod progiem, rozmiaru brak -> PROG", () => {
   assert.deepEqual(kinds(out), ["PROG"]);
 });
 
-t("rozmiar wraca pod progiem -> KUPUJ, kolejny przebieg cisza", () => {
+t("rozmiar wraca pod progiem -> KUPUJ, cisza, TANIEJ, ZNIKNAL", () => {
   const a = decide(null, [R({ price: 454.99, available: false })], config, NIGHT);
   const b = decide(a.state, [R({ price: 454.99, available: true })], config, NIGHT);
   assert.deepEqual(kinds(b), ["KUPUJ"]);
@@ -70,14 +97,27 @@ t("awaria: alert dopiero po N bledach, potem POWROT; stan sprzed awarii zostaje"
   let s = decide(null, [R({ price: 649.99, available: false })], config, NIGHT).state;
   const all = [];
   for (let i = 0; i < config.errorAlertAfter + 2; i++) {
-    const o = decide(s, [{ source: "nike", shop: "Nike.com PL", ok: false, error: "HTTP 403" }], config, NIGHT);
+    const o = decide(s, [{ ...R({}), ok: false, error: "HTTP 403" }], config, NIGHT);
     all.push(...kinds(o));
     s = o.state;
   }
   assert.deepEqual(all, ["AWARIA"]);
-  assert.equal(s.sources.nike.price, 649.99);
+  assert.equal(s.sources["am90-grey:nike"].price, 649.99);
   const back = decide(s, [R({ price: 649.99, available: false })], config, NIGHT);
   assert.deepEqual(kinds(back), ["POWROT"]);
+});
+
+t("feed: pierwszy przebieg cicho, potem NOWE tylko dla nowych i pasujacych", () => {
+  const feed = config.feeds.find((f) => f.type === "pepper");
+  const F = (items) => ({ kind: "feed", source: feed.id, feed, shop: feed.shop, url: feed.url, ok: true, items });
+  const base = [{ id: "1", title: "Nike Air Max 90 szare", price: 454.99 }, { id: "2", title: "Air Max 90 stare", expired: true }];
+  const a = decide(null, [F(base)], config, NIGHT);
+  assert.deepEqual(kinds(a), []);
+  const b = decide(a.state, [F([{ id: "3", title: "Buty Nike AIR MAX 90 r. 43", price: 399, shop: "Zalando", url: "https://p/3" }, { id: "4", title: "Odkurzacz" }, ...base])], config, NIGHT);
+  assert.deepEqual(kinds(b), ["NOWE"]);
+  assert.equal(b.msgs[0].r.url, "https://p/3");
+  const c = decide(b.state, [F([{ id: "3", title: "Buty Nike AIR MAX 90 r. 43" }, ...base])], config, NIGHT);
+  assert.deepEqual(kinds(c), []);
 });
 
 t("raport dzienny raz dziennie po 8:00 czasu PL", () => {
@@ -92,6 +132,7 @@ t("wiadomosc escapuje HTML i ma link", () => {
   const m = formatMessage({ kind: "KUPUJ", r: R({ shop: "A<B", url: "https://s?a=1&b=2" }), text: "x" }, config);
   assert.match(m, /A&lt;B/);
   assert.match(m, /a=1&amp;b=2/);
+  assert.match(m, /DO6706-002/);
 });
 
 console.log(`\n${n} testow OK`);

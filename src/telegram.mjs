@@ -1,15 +1,17 @@
 // Wysylka w jedna strone, jak w ups-watch: parse_mode=HTML, bo w HTML
 // escapuje sie tylko < > &, a w cenach sa przecinki i strzalki.
 
-const ICON = { KUPUJ: "🟢", TANIEJ: "🟢", DOSTEPNY: "🟡", PROG: "🔵", ZNIKNAL: "⚪", AWARIA: "🔴", POWROT: "🔧", RAPORT: "📋", TEST: "🧪" };
+const ICON = { KUPUJ: "🟢", TANIEJ: "🟢", DOSTEPNY: "🟡", PROG: "🔵", ZNIKNAL: "⚪", AWARIA: "🔴", POWROT: "🔧", RAPORT: "📋", TEST: "🧪", NOWE: "🔔" };
 
 export function escapeHtml(s) {
   return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 export function formatMessage(m, config) {
-  const head = `${ICON[m.kind] || ""} <b>buty-watch · ${escapeHtml(m.kind)}</b>`;
-  const body = [head, `<b>${escapeHtml(config.product.name)}</b> (${escapeHtml(config.product.styleColor)})`];
+  const head = `${ICON[m.kind] || ""} <b>${escapeHtml(m.kind)}</b>${m.track ? ` · tor ${escapeHtml(m.track)}` : ""}`;
+  const body = [head];
+  const p = m.r && m.r.product;
+  if (p) body.push(`<b>${escapeHtml(p.name)}</b> (${escapeHtml(p.styleColor)}), r. ${escapeHtml(p.size)}`);
   if (m.r) body.push(`${escapeHtml(m.r.shop)}: ${escapeHtml(m.text)}`);
   else body.push(escapeHtml(m.text));
   if (m.r && m.r.url && m.kind !== "AWARIA") body.push(`👉 <a href="${escapeHtml(m.r.url)}">otwórz w sklepie</a>`);

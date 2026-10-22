@@ -1,29 +1,37 @@
 {
-  "product": {
-    "name": "Nike Air Max 90 Smoke Grey/Light Photo Blue",
-    "styleColor": "DO6706-002",
-    "gtin43": "00195244683369"
-  },
-  "size": "43",
-  "maxPrice": 460,
   "stopAfter": "2026-12-31",
   "dailyReportHourWarsaw": 8,
   "errorAlertAfter": 4,
-  "sources": {
-    "nike": {
-      "label": "Nike.com PL",
-      "url": "https://www.nike.com/pl/t/buty-meskie-nike-air-max-90-EZeqopR0/DO6706-002"
+  "tracks": {
+    "a": "GitHub Actions co 15 min",
+    "b": "laptop, Harmonogram zadan co 15 min - sklepy, ktore blokuja IP GitHuba (Akamai)"
+  },
+  "products": [
+    {
+      "id": "am90-grey",
+      "name": "Air Max 90 Smoke Grey/Light Photo Blue",
+      "styleColor": "DO6706-002",
+      "size": "43",
+      "maxPrice": 460,
+      "sources": [
+        { "type": "nike", "track": "a", "shop": "Nike.com PL", "url": "https://www.nike.com/pl/t/buty-meskie-nike-air-max-90-EZeqopR0/DO6706-002" },
+        { "type": "idosell", "track": "a", "shop": "SneakerShop / Adrenaline", "productId": "49223", "url": "https://sneakershop.pl/pl/products/obuwie/mezczyzna/nike-sportswear/buty-meskie-nike-air-max-90-do6706-002-49223.html" },
+        { "type": "jd", "track": "b", "shop": "JD Sports PL", "url": "https://jdsports.pl/meskie/buty/sneakersy/nike-air-max-90-szary-do6706-002" }
+      ]
     },
-    "jd": {
-      "label": "JD Sports PL",
-      "onActions": false,
-      "why": "Akamai blokuje IP GitHuba (Access Denied takze dla Chrome, 22.10.2026); z domowego lacza dziala",
-      "url": "https://jdsports.pl/meskie/buty/sneakersy/nike-air-max-90-szary-do6706-002"
-    },
-    "sneakershop": {
-      "label": "SneakerShop / Adrenaline",
-      "url": "https://sneakershop.pl/pl/products/obuwie/mezczyzna/nike-sportswear/buty-meskie-nike-air-max-90-do6706-002-49223.html",
-      "productId": "49223"
+    {
+      "id": "am90-flax",
+      "name": "Air Max 90 PRM TRK3 Flax/Wheat/Light Brown",
+      "styleColor": "Zalando NI115O05T-O11",
+      "size": "43",
+      "maxPrice": 460,
+      "sources": [
+        { "type": "zalando", "track": "b", "shop": "Zalando", "url": "https://www.zalando.pl/nike-sportswear-air-max-90-prm-trk3-unisex-sneakersy-niskie-flaxwheatlight-brown-ni115o05t-o11.html" }
+      ]
     }
-  }
+  ],
+  "feeds": [
+    { "id": "pepper-am90", "type": "pepper", "track": "a", "shop": "Pepper.pl", "query": "air max 90", "match": "air\\s*max\\s*90", "url": "https://www.pepper.pl/search?q=air+max+90" },
+    { "id": "lounge-nike", "type": "lounge", "track": "b", "shop": "Zalando Lounge", "match": "nike|air ?max|sneaker", "url": "https://www.zalando-lounge.pl/nike-outlet/" }
+  ]
 }
