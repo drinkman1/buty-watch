@@ -1,0 +1,21 @@
+{
+  "sources": {
+    "nike": {
+      "available": false,
+      "buy": false,
+      "price": 454.99,
+      "failStreak": 0,
+      "errorAlerted": false,
+      "stock": "OOS"
+    },
+    "sneakershop": {
+      "available": false,
+      "buy": false,
+      "price": 519.99,
+      "failStreak": 0,
+      "errorAlerted": false,
+      "stock": 0
+    }
+  },
+  "lastDaily": "2026-10-22"
+}
