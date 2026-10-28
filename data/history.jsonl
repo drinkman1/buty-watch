@@ -3,3 +3,4 @@
 {"t":"2026-10-23T05:56:39.842Z","r":[{"s":"am90-grey:nike","ok":true,"p":454.99,"a":true,"n":"LOW"},{"s":"am90-grey:idosell","ok":true,"p":519.99,"a":false,"n":0},{"s":"pepper-am90","ok":true,"n":30}],"m":["KUPUJ"]}
 {"t":"2026-10-23T11:29:10.450Z","r":[{"s":"am90-grey:nike","ok":true,"p":454.99,"a":false,"n":"OOS"},{"s":"am90-grey:idosell","ok":true,"p":519.99,"a":false,"n":0},{"s":"pepper-am90","ok":true,"n":30}],"m":["ZNIKNAL","RAPORT"]}
 {"t":"2026-10-28T01:37:26.064Z","r":[{"s":"am90-grey:nike","ok":true,"p":454.99,"a":true,"n":"LOW"},{"s":"am90-grey:idosell","ok":true,"p":519.99,"a":false,"n":0},{"s":"pepper-am90","ok":true,"n":30}],"m":["KUPUJ"]}
+{"t":"2026-10-28T14:25:08.291Z","r":[{"s":"am90-grey:nike","ok":true,"p":454.99,"a":false,"n":"OOS"},{"s":"am90-grey:idosell","ok":true,"p":519.99,"a":false,"n":0},{"s":"pepper-am90","ok":true,"n":29}],"m":["ZNIKNAL"]}
