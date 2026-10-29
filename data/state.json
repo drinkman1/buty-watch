@@ -19,10 +19,10 @@
     "am90-grey:nike": {
       "failStreak": 0,
       "errorAlerted": false,
-      "available": true,
-      "buy": true,
+      "available": false,
+      "buy": false,
       "price": 454.99,
-      "stock": "LOW"
+      "stock": "OOS"
     },
     "am90-grey:idosell": {
       "failStreak": 0,
